@@ -1,9 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Karantina&family=Quicksand');
+
+body{
+    display: flex;
+    background-image: url("../images/background.png");
+    /* Background pattern from Toptal Subtle Patterns */
+}
+
+/*** HEADER ***/
+
 header{
+    display: flex;
+    align-items: center;
     width: 100%;
-    height: 10%;
-    background-color: aqua;
+    height: 8vh;
+    background-color: rgb(72, 82, 82);
+    color: whitesmoke;
+    font-family: 'Karantina', cursive;
+    font-size: 3rem;
+    letter-spacing: 1px;
 }
 
 header > img{
     width: 10%;
+    height: 100%;
 }
+
+header > p{
+    width: 80%;
+}
+
+header > img:last-child{
+    height: 90%;
+}
+
+/*** CONTENT ***/
+
+#content{
+    font-family: 'Quicksand', sans-serif;
+}
+
+
+/*** FOOTER ***/
