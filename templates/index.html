@@ -10,13 +10,23 @@
 <body>
     <header>
         <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="logo"><p>CONTENT AGGREGATOR</p>
-        <img src="{{ url_for('static', filename='images/settings.svg') }}">
+        <img id="settings" src="{{ url_for('static', filename='images/settings.svg') }}">
     </header>
     <div id="content">
+
+        <div id="settings">
+
+        </div>
 
     </div>
     <footer>
 
     </footer>
+    <div id="modal" class="popup"></div>
+    <div id="modal-content" class="popup">
+        <h3>Settings</h3>
+        
+    </div>
 </body>
+<script src="{{ url_for('static', filename='js/settings.js') }}"></script>
 </html>
