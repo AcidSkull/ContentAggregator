@@ -3,6 +3,10 @@ from flask_celery import make_celery
 from bs4 import BeautifulSoup
 import requests, psycopg2
 
+# POSTGRESQL
+conn = psycopg2.connect("dbname=contaggr user=postgres")
+cur = conn.cursor()
+
 # FLASK and CELERY CONFIGURATION
 app = Flask(__name__)
 app.config.update(
@@ -15,6 +19,12 @@ celery = make_celery(app)
 def get_articles(content):
     soup = BeautifulSoup(content, 'html.parser')
     articles = soup.find_all("h2", {"class": "post-item-title wi-post-title fox-post-title post-header-section size-normal"})
+    for article in articles:
+        title = article.get_text().strip()
+        anchor = article.find('a')['href']
+        
+        cur.execute('INSERT INTO linuxiac (title, anchor) VALUES (%s, %s)', (title, anchor))
+        conn.commit()
 
 @celery.task()
 def check_for_news():
