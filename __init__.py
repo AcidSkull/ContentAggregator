@@ -14,7 +14,6 @@ def add_together(a, b):
 
 @app.route('/')
 def index():
-    return f"{add_together(6,10)}"
     return render_template('index.html')
 
 if __name__ == "__main__":
