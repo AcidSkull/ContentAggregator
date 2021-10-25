@@ -48,7 +48,8 @@ header > img:last-child:hover{
 
 /*** POP UP SETTINGS ***/
 
-.popup{
+#modal{
+    display: none;
     position: fixed;
     z-index: 1;
     left: 0;
