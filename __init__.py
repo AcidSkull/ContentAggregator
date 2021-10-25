@@ -1,6 +1,9 @@
 from flask import Flask, render_template
 from flask_celery import make_celery
+from bs4 import BeautifulSoup
+import requests, psycopg2
 
+# FLASK and CELERY CONFIGURATION
 app = Flask(__name__)
 app.config.update(
     CELERY_BROKER_URL='redis://localhost:6379',
@@ -9,11 +12,19 @@ app.config.update(
 celery = make_celery(app)
 
 @celery.task()
-def add_together(a, b):
-    return a + b
+def get_articles(content):
+    soup = BeautifulSoup(content, 'html.parser')
+    articles = soup.find_all("h2", {"class": "post-item-title wi-post-title fox-post-title post-header-section size-normal"})
+
+@celery.task()
+def check_for_news():
+    page = requests.get('https://linuxiac.com')
+    if page.status_code == 200:
+       get_articles(page.content)
 
 @app.route('/')
 def index():
+    check_for_news()
     return render_template('index.html')
 
 if __name__ == "__main__":
