@@ -11,13 +11,16 @@
     <header>
         <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="logo"><p>CONTENT AGGREGATOR</p>
         <img id="settings" src="{{ url_for('static', filename='images/settings.svg') }}">
+        <div id="settings"></div>
     </header>
     <div id="content">
+      <ul>
+      {% for r in res %}
 
-        <div id="settings">
+      <li><a href="{{ r[2] }}" target="_blank">{{ r[1] }}</a></li>
 
-        </div>
-
+      {% endfor %}
+    </ul>
     </div>
     <footer>
 
@@ -25,7 +28,7 @@
     <div id="modal" class="popup">
         <div id="modal-content" class="popup">
             <h3>Settings</h3>
-            
+
         </div>
     </div>
 </body>

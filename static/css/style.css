@@ -2,8 +2,10 @@
 
 body{
     display: flex;
-    background-image: url("../images/background.png");
     /* Background pattern from Toptal Subtle Patterns */
+    background-image: url("../images/background.png");
+    display: flex;
+    flex-direction: column;
 }
 
 /*** HEADER ***/
@@ -41,6 +43,7 @@ header > img:last-child:hover{
 
 #content{
     font-family: 'Quicksand', sans-serif;
+    width: 100%;
 }
 
 
