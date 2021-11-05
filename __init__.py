@@ -36,6 +36,12 @@ celery = make_celery(app)
 def check_articles(content, index):
     conn = psycopg2.connect("dbname=contaggr user=postgres")
     cur = conn.cursor()
+
+    # GETTING A FIRST RESULT FROM TABLE
+    cur.execute(f"SELECT title FROM {TablesNames[index]} LIMIT 1")
+    result = cur.fetchone()
+    first_article = result[0] if result != None else ''
+
     soup = BeautifulSoup(content, 'html.parser')
 
     if SitesConatiner[index][1] != None:
@@ -43,46 +49,62 @@ def check_articles(content, index):
     else:
         articles = soup.find_all(SitesConatiner[index][0])
 
-    if SitesConatiner[index][2] == 0: get_articles_1(articles, index, cur)
-    elif SitesConatiner[index][2] == 1: get_articles_2(articles, index, cur)
-    elif SitesConatiner[index][2] == 2: get_articles_3(articles, index, cur)
-    elif SitesConatiner[index][2] == 3: get_articles_4(articles, index, cur)
+    print(f"> Getting data from {TablesNames[index]}")
+
+    try:
+        if SitesConatiner[index][2] == 0: get_articles_1(articles, index, cur, first_article)
+        elif SitesConatiner[index][2] == 1: get_articles_2(articles, index, cur, first_article)
+        elif SitesConatiner[index][2] == 2: get_articles_3(articles, index, cur, first_article)
+        elif SitesConatiner[index][2] == 3: get_articles_4(articles, index, cur, first_article)
+    except Exception:
+        print(f"! There was an error with fetching data from {TablesNames[index]}")
+        print("-----------------------------")
+        print(Exception)
+        print("-----------------------------")
+
+    print(f">> Successfully fetched data from {TablesNames[index]}")
 
     conn.commit()
     cur.close()
     conn.close()
 
 @celery.task()
-def get_articles_1(articles, index, cur):
+def get_articles_1(articles, index, cur, breakpoint):
     for article in articles:
         title = article.get_text().strip()
         anchor = article.find('a')['href']
 
+        if (title == breakpoint): break;
+
         cur.execute(f"""INSERT INTO {TablesNames[index]} (title, anchor) VALUES (%s, %s)""", (title, anchor))
 
 @celery.task()
-def get_articles_2(articles, index, cur):
+def get_articles_2(articles, index, cur, breakpoint):
     for article in articles:
         title = article.get_text().strip()
         anchor = article['href']
 
+        if (title == breakpoint): break;
+
         cur.execute(f"""INSERT INTO {TablesNames[index]} (title, anchor) VALUES (%s, %s)""", (title, anchor))
 
 @celery.task()
-def get_articles_3(articles, index, cur):
+def get_articles_3(articles, index, cur, breakpoint):
     for article in articles:
         title = article.find(SitesConatiner[index][3]).get_text().strip()
         anchor = article.find('a')['href']
 
+        if (title == breakpoint): break;
+
         cur.execute(f"""INSERT INTO {TablesNames[index]} (title, anchor) VALUES (%s, %s)""", (title, anchor))
 
 @celery.task()
-def get_articles_4(articles, index, cur):
+def get_articles_4(articles, index, cur, breakpoint):
     for article in articles:
-        print(article)
-        print('---------------------------------------------------------')
         title = article.find(SitesConatiner[index][3]).get_text().strip()
         anchor = article.find_parent('a')['href']
+
+        if (title == breakpoint): break;
 
         cur.execute(f"""INSERT INTO {TablesNames[index]} (title, anchor) VALUES (%s, %s)""", (title, anchor))
 
