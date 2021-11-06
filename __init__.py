@@ -23,6 +23,7 @@ SitesConatiner = [('h2', 'post-item-title wi-post-title fox-post-title post-head
                 # 3 - headling and unwanted tags in the link block (but we use tag that is in the link block)
 
 TablesNames = ['linuxiac', 'itsfoss', 'eff', 'thenextweb', 'digg', 'cnet', 'wired', 'axios', 'techradar']
+TablesNamesHeadlings = ['Linuxiac', 'It\'s foss', 'EFF', 'The Next Web', 'Digg', 'Cnet', 'Wired', 'Axios', 'The Tech Radar']
 
 # FLASK and CELERY CONFIGURATION
 app = Flask(__name__)
@@ -129,7 +130,7 @@ def index():
     cur.close()
     conn.close()
 
-    return render_template('index.html', every_news=result)
+    return render_template('index.html', every_news=result, headlings=TablesNamesHeadlings)
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")

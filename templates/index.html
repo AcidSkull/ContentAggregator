@@ -5,7 +5,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="shortcut icon" type='image/ico' href="{{ url_for('static', filename='images/favicon.ico') }}">
     <title>Content Aggregator</title>
+    <style media="screen">
+        ul{
+          list-style-image: url({{ url_for('static',filename='images/arrow.png') }});
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -17,6 +23,7 @@
 
       {%  for site_news in every_news %}
         <div class="news_container">
+          <h2>{{ headlings[loop.index - 1] }}</h2>
           <ul>
             {% for news in site_news %}
 

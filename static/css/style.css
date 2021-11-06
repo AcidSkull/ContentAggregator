@@ -42,10 +42,35 @@ header > img:last-child:hover{
 /*** CONTENT ***/
 
 #content{
+    display: flex;
+    flex-wrap: wrap;
     font-family: 'Quicksand', sans-serif;
     width: 100%;
+    margin: 0;
 }
 
+.news_container{
+  width: 30%;
+  margin: 1%;
+  padding: 0.5%;
+  background: rgba( 120, 153, 153, 0.7 );
+  box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+  backdrop-filter: blur( 1px );
+  -webkit-backdrop-filter: blur( 1px );
+  border-radius: 10px;
+  border: 1px solid rgba( 255, 255, 255, 0.18 );
+}
+
+.news_container > h2{
+  margin: 0 auto;
+  text-align: center;
+  border-bottom: 2px black solid;
+}
+
+a:link, a:visited{
+  color: white;
+  text-decoration: none;
+}
 
 /*** FOOTER ***/
 
