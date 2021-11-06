@@ -14,7 +14,19 @@
         <div id="settings"></div>
     </header>
     <div id="content">
-      
+
+      {%  for site_news in every_news %}
+        <div class="news_container">
+          <ul>
+            {% for news in site_news %}
+
+            <li><a href="{{ news[1] }}" target='_blank'>{{ news[0] }}</a></li>
+
+            {% endfor %}
+          </ul>
+        </div>
+      {% endfor %}
+
     </div>
     <footer>
 

@@ -117,8 +117,19 @@ def check_for_news():
 
 @app.route('/')
 def index():
-    check_for_news()
-    return render_template('index.html')
+    # Getting news from database
+    conn = psycopg2.connect('dbname=contaggr user=postgres')
+    cur = conn.cursor()
+
+    result = list()
+    for Table in TablesNames:
+        cur.execute(f'SELECT title,anchor FROM {Table} LIMIT 10')
+        result.append(cur.fetchall())
+
+    cur.close()
+    conn.close()
+
+    return render_template('index.html', every_news=result)
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
