@@ -31,14 +31,6 @@ header > p{
     width: 80%;
 }
 
-header > img:last-child{
-    height: 90%;
-}
-
-header > img:last-child:hover{
-    cursor: pointer;
-}
-
 /*** CONTENT ***/
 
 #content{
@@ -72,26 +64,7 @@ a:link, a:visited{
   text-decoration: none;
 }
 
-/*** FOOTER ***/
-
-/*** POP UP SETTINGS ***/
-
-#modal{
-    display: none;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-#modal-content{
-    background-color: #fefefe;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 75%;
+li{
+  padding: 3px;
+  border-bottom: rgba(255,255,255,0.25) 1px solid;
 }

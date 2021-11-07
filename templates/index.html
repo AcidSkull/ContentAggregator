@@ -16,8 +16,6 @@
 <body>
     <header>
         <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="logo"><p>CONTENT AGGREGATOR</p>
-        <img id="settings" src="{{ url_for('static', filename='images/settings.svg') }}">
-        <div id="settings"></div>
     </header>
     <div id="content">
 
@@ -34,15 +32,6 @@
         </div>
       {% endfor %}
 
-    </div>
-    <footer>
-
-    </footer>
-    <div id="modal" class="popup">
-        <div id="modal-content" class="popup">
-            <h3>Settings</h3>
-
-        </div>
     </div>
 </body>
 <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
