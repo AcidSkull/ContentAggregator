@@ -1,6 +1,7 @@
 from flask import Flask, render_template
 from flask_celery import make_celery
 from bs4 import BeautifulSoup
+from celery.utils.log import get_task_logger
 import requests, psycopg2
 
 # VARIABLES
@@ -27,10 +28,7 @@ TablesNamesHeadlings = ['Linuxiac', 'It\'s foss', 'EFF', 'The Next Web', 'Digg',
 
 # FLASK and CELERY CONFIGURATION
 app = Flask(__name__)
-app.config.update(
-    CELERY_BROKER_URL='redis://localhost:6379',
-    CELERY_RESULT_BACKEND='redis://localhost:6379'
-)
+logger = get_task_logger(__name__)
 celery = make_celery(app)
 
 @celery.task()
@@ -109,7 +107,7 @@ def get_articles_4(articles, index, cur, breakpoint):
 
         cur.execute(f"""INSERT INTO {TablesNames[index]} (title, anchor) VALUES (%s, %s)""", (title, anchor))
 
-@celery.task()
+@celery.task(name='check_for_news')
 def check_for_news():
     for index, site in enumerate(SitesURL):
         page = requests.get('https://' + site)
