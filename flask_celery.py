@@ -3,9 +3,10 @@ from config import *
 
 
 def make_celery(app):
+    app.config['timezone'] = TIMEZONE
     app.config['CELERY_BROKER_URL'] = CELERY_BROKER_URL
-    app.config['CELERY_RESULT_BACKEND'] = CELERY_RESULT_BACKEND
-    app.config['CELERYBEAT_SCHEDULE'] = {
+    app.config['result_backend'] = CELERY_RESULT_BACKEND
+    app.config['beat_schelude'] = {
         'peridoic_task-every-minute' : {
             'task' : 'check_for_news',
             'schedule' : PERIOD_BETWEEN_TASK
