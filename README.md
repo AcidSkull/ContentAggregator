@@ -13,7 +13,7 @@ This project is simply content aggregator build using FLASK python web framwork,
 
 1. Download dependencies ```pip install flask celery requests bs4``` or ```pip3 install flask celery requests bs4```
 2. Create postgres database and import **database-schema.sql**
-3. Run celery beat -> ```celery -A __init__.celery beat```
-4. Run celery -> ```celery -A __init__.celery worker -l INFO```
-5. Finaly run flska application ```python __init__.py``` or ```python3 __init__.py```
+3. Run celery beat -> ```celery -A app.celery beat```
+4. Run celery -> ```celery -A app.celery worker -l INFO```
+5. Finaly run flska application ```python app.py``` or ```python3 app.py```
 6. Enjoy
