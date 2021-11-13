@@ -9,18 +9,6 @@ This project is simply content aggregator build using FLASK python web framwork,
 - Requests
 - BeatifulSoup
 
-### SUPORTED SITES
-
-- Linuxiac
-- It's foss
-- EFF
-- The Next Web
-- Digg
-- Techradar
-- Wired
-- Axios
-- Cnet
-
 ### INSTALATION
 
 1. Download dependencies ```pip install flask celery requests bs4``` or ```pip3 install flask celery requests bs4```
