@@ -1,34 +1,40 @@
 from flask import Flask, render_template
 from flask_celery import make_celery
-from bs4 import BeautifulSoup
-from celery.utils.log import get_task_logger
+from lxml import html
 import requests, psycopg2
 
 # VARIABLES
-SitesURL = ['linuxiac.com', 'news.itsfoss.com', 'eff.org',
+SitesURL = ['linuxiac.com', 'news.itsfoss.com/category/featured/', 'eff.org',
             'thenextweb.com/latest', 'digg.com/technology', 'cnet.com/tech/',
-            'wired.com/most-recent/', 'axios.com/technology', 'techradar.com/news']
-SitesConatiner = [('h2', 'post-item-title wi-post-title fox-post-title post-header-section size-normal', 0),
-                ('h3', 'entry-title', 0),
-                ('h3', 'node__title', 0),
-                ('h4', 'c-listArticle__heading', 0),
-                ('a', 'namespace-scheme', 1),
-                ('div', 'item c-universalLatest_item', 2, 'h3'),
-                ('li', 'archive-item-component', 2, 'h2'),
-                ('h3', 'font-regular leading-tight mt-0 md:text-h5 lg:text-h4 col-1-13 mb-12 text-h6', 0),
-                ('article', None, 3, 'h3'),]
-                # [block with heading, class of heading, type of heading building]
-                # 0 - link block in the headling
-                # 1 - headling in the link block
-                # 2 - headling and unwanted tags in the link block
-                # 3 - headling and unwanted tags in the link block (but we use tag that is in the link block)
+            'wired.com/most-recent', 'axios.com/technology', 'techradar.com/news']
+SitesURL_for_anchor = ['linuxiac.com', 'news.itsfoss.com/category/featured/', 'eff.org',
+            'thenextweb.com/latest', 'digg.com', 'cnet.com',
+            'wired.com', 'axios.com/technology', 'techradar.com/news']
+
+SitesConatiner = [('//*[@id="wi-bf"]/div[2]/div/div/div/div[1]/div/div[1]/div/div[1]/article[', ']/div[2]/div/div/div[1]/h2/a', ']/div[2]/div/div/div[1]/h2/a',10),
+                  ('/html/body/div/div/section/main/article[', ']/div/header/h2/a', ']/div/header/h2/a', 6),
+                  ('/html/body/div[6]/div[2]/div[2]/div/div/div/div[6]/div/div[1]/div[', ']/article/header/h3/a', ']/article/header/h3/a',10),
+                  ('//*[@id="articleList"]/article[', ']/div/h4/a', ']/div/h4/a', 7),
+                  ('/html/body/div/main/section[2]/div/article[', ']/div/header/a/h2', ']/div/header/a' ,20),
+                  ('/html/body/div[2]/div[2]/div[3]/section/div[2]/div[1]/div[1]/div[', ']/div/a/div/h3', ']/div/a', 10),
+                  ('/html/body/div[3]/div/div[3]/div/div[2]/div/div[1]/div/div/ul/li[', ']/div/a/h2', ']/div/a', 10),
+                  ('/html/body/div[3]/div[1]/amp-layout[', ']/div/div/h3/a', ']/div/div/h3/a', 4),
+                  ('//*[@id="content"]/section[2]/div/div[', ']/a[1]/article/div[2]/header/h3', ']/a[1]', 20),]
+                  # (common xpath, xpath to title, xpath to link)
+                  # -------------------------------------------
+                  # EXAMPLE:
+                  # Xpath to title ->/html/body/div[2]/div[2]/div[3]/section/div[2]/div[1]/div[1]/div[1]/div/a/div/h3
+                  # Xpath to link -> /html/body/div[2]/div[2]/div[3]/section/div[2]/div[1]/div[1]/div[1]/div/a
+                  # --------------------------------------------
+                  # common path -> /html/body/div[2]/div[2]/div[3]/section/div[2]/div[1]/div[1]/div[
+                  # xpath to title -> ]/div[1]/div/a/div/h3
+                  # xpath to link -> ]/div/a
 
 TablesNames = ['linuxiac', 'itsfoss', 'eff', 'thenextweb', 'digg', 'cnet', 'wired', 'axios', 'techradar']
 TablesNamesHeadlings = ['Linuxiac', 'It\'s foss', 'EFF', 'The Next Web', 'Digg', 'Cnet', 'Wired', 'Axios', 'The Tech Radar']
 
 # FLASK and CELERY CONFIGURATION
 app = Flask(__name__)
-logger = get_task_logger(__name__)
 celery = make_celery(app)
 
 @celery.task()
@@ -41,71 +47,35 @@ def check_articles(content, index):
     result = cur.fetchone()
     first_article = result[0] if result != None else ''
 
-    soup = BeautifulSoup(content, 'html.parser')
-
-    if SitesConatiner[index][1] != None:
-        articles = soup.find_all(SitesConatiner[index][0], {"class": SitesConatiner[index][1]})
-    else:
-        articles = soup.find_all(SitesConatiner[index][0])
-
-    print(f"> Getting data from {TablesNames[index]}")
-
-    try:
-        if SitesConatiner[index][2] == 0: get_articles_1(articles, index, cur, first_article)
-        elif SitesConatiner[index][2] == 1: get_articles_2(articles, index, cur, first_article)
-        elif SitesConatiner[index][2] == 2: get_articles_3(articles, index, cur, first_article)
-        elif SitesConatiner[index][2] == 3: get_articles_4(articles, index, cur, first_article)
-    except Exception:
-        print(f"! There was an error with fetching data from {TablesNames[index]}")
-        print("-----------------------------")
-        print(Exception)
-        print("-----------------------------")
-
-    print(f">> Successfully fetched data from {TablesNames[index]}")
+    print(f"> Getting data from {TablesNames[index]}\n-----------------------------------")
+    get_articles(content, index, cur, first_article)
+    print(f">> Successfully fetched data from {TablesNames[index]}\n-----------------------------------")
 
     conn.commit()
     cur.close()
     conn.close()
 
 @celery.task()
-def get_articles_1(articles, index, cur, breakpoint):
-    for article in articles:
-        title = article.get_text().strip()
-        anchor = article.find('a')['href']
+def get_articles(content, index, cur, breakpoint):
+    tree = html.fromstring(content)
+    max = SitesConatiner[index][3] + 1
 
-        if (title == breakpoint): break;
+    for i in range(1, max):
+        xpath1 = SitesConatiner[index][0] + str(i) + SitesConatiner[index][1]
+        xpath2 = SitesConatiner[index][0] + str(i) + SitesConatiner[index][2]
 
-        cur.execute(f"""INSERT INTO {TablesNames[index]} (title, anchor) VALUES (%s, %s)""", (title, anchor))
+        try:
+            title = tree.xpath(xpath1)[0].text.strip()
+            if title == breakpoint: break;
 
-@celery.task()
-def get_articles_2(articles, index, cur, breakpoint):
-    for article in articles:
-        title = article.get_text().strip()
-        anchor = article['href']
-
-        if (title == breakpoint): break;
-
-        cur.execute(f"""INSERT INTO {TablesNames[index]} (title, anchor) VALUES (%s, %s)""", (title, anchor))
-
-@celery.task()
-def get_articles_3(articles, index, cur, breakpoint):
-    for article in articles:
-        title = article.find(SitesConatiner[index][3]).get_text().strip()
-        anchor = article.find('a')['href']
-
-        if (title == breakpoint): break;
+            anchor = tree.xpath(xpath2)[0].attrib["href"]
+            # Making sure we get full link
+            if anchor[:4].lower() != 'http': anchor = 'https://' + SitesURL_for_anchor[index] + anchor
+        except:
+            continue;
 
         cur.execute(f"""INSERT INTO {TablesNames[index]} (title, anchor) VALUES (%s, %s)""", (title, anchor))
 
-@celery.task()
-def get_articles_4(articles, index, cur, breakpoint):
-    for article in articles:
-        title = article.find(SitesConatiner[index][3]).get_text().strip()
-        anchor = article.find_parent('a')['href']
-
-        if (title == breakpoint): break;
-
-        cur.execute(f"""INSERT INTO {TablesNames[index]} (title, anchor) VALUES (%s, %s)""", (title, anchor))
 
 @celery.task(name='check_for_news')
 def check_for_news():
@@ -127,7 +97,7 @@ def index():
 
     cur.close()
     conn.close()
-
+    
     return render_template('index.html', every_news=result, headlings=TablesNamesHeadlings)
 
 if __name__ == "__main__":

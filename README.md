@@ -7,11 +7,10 @@ This project is simply content aggregator build using FLASK python web framwork,
 - Flask
 - Celery
 - Requests
-- BeatifulSoup
 
 ### INSTALATION
 
-1. Download dependencies ```pip install flask celery requests bs4``` or ```pip3 install flask celery requests bs4```
+1. Download dependencies ```pip install flask celery requests``` or ```pip3 install flask celery requests bs4```
 2. Create postgres database and import **database-schema.sql**
 3. Run celery beat -> ```celery -A app.celery beat```
 4. Run celery -> ```celery -A app.celery worker -l INFO```
