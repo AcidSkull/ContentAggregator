@@ -24,7 +24,6 @@ def check_articles(content, index):
 
     conn.commit()
     cur.close()
-    conn.close()
 
 @celery.task()
 def get_articles(content, index, cur, breakpoint):
@@ -44,7 +43,7 @@ def get_articles(content, index, cur, breakpoint):
             if anchor[:4].lower() != 'http': anchor = 'https://' + SitesURL_for_anchor[index] + anchor
         except:
             continue;
-
+        
         cur.execute(f"""INSERT INTO {TablesNames[index]} (title, anchor) VALUES (%s, %s)""", (title, anchor))
 
 
@@ -57,8 +56,9 @@ def check_for_news():
 
 @app.route('/')
 def index():
+    check_for_news()
     # Getting news from database
-    conn = psycopg2.connect(f'dbname={DB_NAME} user={DB_USER}')
+    conn = psycopg2.connect(f"dbname='{DB_NAME}' user='{DB_USER}'")
     cur = conn.cursor()
 
     result = list()

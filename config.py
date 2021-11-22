@@ -4,7 +4,7 @@ from celery.schedules import crontab
 
 CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379'
-PERIOD_BETWEEN_TASK = crontab(hour="*/6")
+PERIOD_BETWEEN_TASK = crontab(hour="*")
 TIMEZONE = 'Europe/Warsaw'
 
 # DATABASE
@@ -12,6 +12,8 @@ TIMEZONE = 'Europe/Warsaw'
 DB_NAME = 'contaggr'
 DB_USER = 'postgres'
 DB_PASSWORD = ''
+DB_HOST = ''
+DB_PORT = ''
 
 # SITES VARIABLES
 
