@@ -14,21 +14,27 @@ def check_articles(content, index):
     cur = conn.cursor()
 
     # GETTING A FIRST RESULT FROM TABLE
-    cur.execute(f"SELECT title FROM {TablesNames[index]} LIMIT 1")
+    cur.execute(f"SELECT title FROM {TablesNames[index]} ORDER BY id DESC LIMIT 1")
     result = cur.fetchone()
     first_article = result[0] if result != None else ''
 
     print(f"> Getting data from {TablesNames[index]}")
-    get_articles(content, index, cur, first_article)
+    array = get_articles(content, index, first_article)
+    array = array[::-1]
     print(f">> Successfully fetched data from {TablesNames[index]}")
+
+    for a in array:
+        cur.execute(f"""INSERT INTO {TablesNames[index]} (title, anchor) VALUES (%s, %s)""",(a[0], a[1]))
 
     conn.commit()
     cur.close()
+    conn.close()
 
 @celery.task()
-def get_articles(content, index, cur, breakpoint):
+def get_articles(content, index, breakpoint):
     tree = html.fromstring(content)
     max = SitesConatiner[index][3] + 1
+    array = list()
 
     for i in range(1, max):
         xpath1 = SitesConatiner[index][0] + str(i) + SitesConatiner[index][1]
@@ -39,12 +45,14 @@ def get_articles(content, index, cur, breakpoint):
             if title == breakpoint: break;
 
             anchor = tree.xpath(xpath2)[0].attrib["href"]
-            # Making sure we get full link
+            # Making sure we get correct link
             if anchor[:4].lower() != 'http': anchor = 'https://' + SitesURL_for_anchor[index] + anchor
-        except:
-            continue;
 
-        cur.execute(f"""INSERT INTO {TablesNames[index]} (title, anchor) VALUES (%s, %s)""", (title, anchor))
+            array.append((title, anchor))
+        except:
+            continue
+
+    return array
 
 
 @celery.task(name='check_for_news')
@@ -56,6 +64,7 @@ def check_for_news():
 
 @app.route('/')
 def index():
+    check_for_news()
     # Getting news from database
     conn = psycopg2.connect(f"dbname='{DB_NAME}' user='{DB_USER}'")
     cur = conn.cursor()
@@ -63,7 +72,7 @@ def index():
     result = list()
     for Table in TablesNames:
         cur.execute(f'SELECT title,anchor FROM {Table} LIMIT 10')
-        result.append(cur.fetchall())
+        result.append(cur.fetchall()[::-1])
 
     cur.close()
     conn.close()

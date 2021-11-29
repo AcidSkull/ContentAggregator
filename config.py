@@ -20,7 +20,7 @@ DB_PORT = ''
 # URL for the sites to send requests
 SitesURL = ['linuxiac.com', 'news.itsfoss.com/category/featured/', 'eff.org',
             'thenextweb.com/latest', 'digg.com/technology', 'cnet.com/tech/',
-            'wired.com/most-recent', 'axios.com/technology', 'techradar.com/news']
+            'wired.com/most-recent', 'axios.com', 'techradar.com/news']
 # URL to use when getting links for articles
 SitesURL_for_anchor = ['linuxiac.com', 'news.itsfoss.com/category/featured/', 'eff.org',
             'thenextweb.com/latest', 'digg.com', 'cnet.com',
@@ -34,7 +34,7 @@ SitesConatiner = [('//*[@id="wi-bf"]/div[2]/div/div/div/div[1]/div/div[1]/div/di
                   ('/html/body/div/main/section[2]/div/article[', ']/div/header/a/h2', ']/div/header/a' ,20),
                   ('/html/body/div[2]/div[2]/div[3]/section/div[2]/div[1]/div[1]/div[', ']/div/a/div/h3', ']/div/a', 10),
                   ('/html/body/div[3]/div/div[3]/div/div[2]/div/div[1]/div/div/ul/li[', ']/div/a/h2', ']/div/a', 10),
-                  ('/html/body/div[3]/div[1]/amp-layout[', ']/div/div/h3/a', ']/div/div/h3/a', 4),
+                  ('/html/body/div[2]/div/section[3]/amp-layout[', ']/div/div/h3/a', ']/div/div/h3/a', 12),
                   ('//*[@id="content"]/section[2]/div/div[', ']/a[1]/article/div[2]/header/h3', ']/a[1]', 20),]
                   # (common xpath, xpath to title, xpath to link)
                   # -------------------------------------------
